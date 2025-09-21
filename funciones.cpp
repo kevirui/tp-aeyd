@@ -44,7 +44,7 @@ double transformar(char tiempo[11]){
 
 //RegCorredores array
 void leerCorredores(RegCorredores& array[]){
-    FILE* file = fopen("./Archivo_corredores_4Refugios.bin", "rb");
+    FILE* file = fopen("./files/archivo_corredores_4Refugios.bin", "rb");
     int n = 322;
     fread(array, sizeof(RegCorredores), n, file);
     // for (int i = 0; i < n; i++){
@@ -66,7 +66,7 @@ void leerCorredores(RegCorredores& array[]){
 }
 //CorredoresCiudad array[]
 void leerCiudades(CorredoresCiudad& array[]){
-    FILE* file = fopen("./ciudades.bin", "rb");
+    FILE* file = fopen("./files/ciudades.bin", "rb");
     if(!file){
         perror("Error al abrir");
         return;
