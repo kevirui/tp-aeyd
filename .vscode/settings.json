@@ -1,0 +1,7 @@
+{
+  "files.associations": {
+    "*.php": "php",
+    ".env*": "dotenv",
+    "iostream": "cpp"
+  }
+}
