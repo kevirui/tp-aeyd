@@ -17,7 +17,7 @@ carreras “4 Refugios Clásica” y “4 Refugios NonStop” (máx. 1000 corred
 # ✅ To-Do List
 
 ## 1. Lectura y limpieza de datos
-- [ ] Abrir y leer `Archivo corredores 4Refugios.bin`.
+- [x] Abrir y leer `Archivo corredores 4Refugios.bin`.
 - [ ] Reemplazar códigos de llegada no válidos por “No Terminó”.
 - [ ] Separar corredores según carrera (Clásica y NonStop).
 
