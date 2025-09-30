@@ -21,27 +21,36 @@ struct CorredoresCiudad
     char localidad[40];
     char ciudad[11];
 };
-
+void espacio();
 double transformar(char tiempo[11]);
 std::string transformarHora(double tiempo);
-void leerCorredores(RegCorredores array[]);
-void leerCiudades(CorredoresCiudad array[]);
+void leerCorredores(RegCorredores array[], int tamaño, string file, bool mostrar);
+void leerCiudades(CorredoresCiudad array[], int tamaño);
 int calcularRegistros(string archivo);
 void separarCarreras(RegCorredores array[], int tamaño);
+void mostrarPorCarrera();
+void ordenarPorTiempo(RegCorredores array[], int tamaño);
 
 int main()
 {
-    int n = calcularRegistros("./files/archivo_corredores_4Refugios.bin");
-    cout << n;
+    transformar("02:30:45.3");
+    int n = calcularRegistros("./files/Archivo corredores 4Refugios.bin");
+    cout << n << endl;
     RegCorredores registro[n];
-    CorredoresCiudad registro2[n];
+    // CorredoresCiudad registro2[n];
 
-    leerCorredores(registro);
-    leerCiudades(registro2);
-    separarCarreras(registro, n);
+    leerCorredores(registro, n, "./files/Archivo corredores 4Refugios.bin", false);
+    mostrarPorCarrera();
+    // leerCiudades(registro2, n);
     // double tiempo = 205431.2;
     // cout << transformarHora(tiempo);
+    // separarCarreras(registro, n);
+
     return 0;
+}
+
+void espacio(){
+    cout <<endl << "-------------------" << endl << endl;
 }
 
 std::string transformarHora(double tiempo)
@@ -76,6 +85,9 @@ std::string transformarHora(double tiempo)
 
 double transformar(char tiempo[11])
 {
+    if (!(tiempo[0] >= '0' && tiempo[0] <= '9')){
+        return -1;
+    }
     float horas = ((tiempo[0] - 48) * 10) + (tiempo[1] - 48);
     float minutos = ((tiempo[3] - 48) * 10) + (tiempo[4] - 48);
     float segundos = ((tiempo[6] - 48) * 10) + (tiempo[7] - 48);
@@ -101,17 +113,16 @@ int calcularRegistros(string archivo)
 }
 
 // RegCorredores array
-void leerCorredores(RegCorredores array[], int tamaño)
+void leerCorredores(RegCorredores array[], int tamaño, string archivo, bool mostrar = false)
 {
-    string txt;
-    FILE *file = fopen("./files/archivo_corredores_4Refugios.bin", "rb");
+    FILE *file = fopen(archivo.c_str(), "rb");
     fread(array, sizeof(RegCorredores), tamaño, file);
-    for (int i = 0; i < tamaño; i++)
-    {
-        txt = string((array[i].categoria));
-        cout << txt.substr(11, 7) << endl;
+    if(mostrar){
+        for (int i = 0; i < tamaño; i++){
+            cout << array[i].numero << " - " << array[i].nombreApellido << " - " << array[i].categoria << " - " << array[i].genero << " - " << array[i].localidad << " - " << transformar(array[i].llegada)<< endl;
+        }
+       espacio();
     }
-    cout << "-------------------" << endl;
     fclose(file);
 }
 
@@ -129,24 +140,19 @@ void leerCiudades(CorredoresCiudad array[], int tamaño)
     {
         cout << array[i].ciudad << endl;
     }
-    cout << "------------------" << endl;
+    espacio();
     fclose(file);
 }
 
-void separarCarreras(RegCorredores array[], int tamaño)
-{
+void separarCarreras(RegCorredores array[], int tamaño){
     string categoria;
     FILE *clasica = fopen("./files/clasica.bin", "wb");
     FILE *nonStop = fopen("./files/nonStop.bin", "wb");
-    for (int i = 0; i < tamaño; i++)
-    {
-        categoria = string(array[i].categoria).substr(11, 7);
-        if (categoria == "Clasica")
-        {
+    for(int i = 0; i < tamaño; i++){
+        categoria = string(array[i].categoria).substr(11,7);
+        if(categoria == "Clasica"){
             fwrite(&array[i], sizeof(RegCorredores), 1, clasica);
-        }
-        else
-        {
+        }else{
             fwrite(&array[i], sizeof(RegCorredores), 1, nonStop);
         }
     }
@@ -154,13 +160,67 @@ void separarCarreras(RegCorredores array[], int tamaño)
     fclose(nonStop);
 }
 
-// void reemplazarNoValidos(char cadena[])
-// {
-//     for (int i = 0; i < sizeof(cadena); i++)
-//     {
-//         if (cadena[i] == '\n' || cadena[i] == '\r')
-//         {
-//             cadena[i] = 'No Termino';
-//         }
-//     }
-// }
+void mostrarPorCarrera(){
+    int n = calcularRegistros("./files/clasica.bin");
+    int k = calcularRegistros("./files/nonStop.bin");
+
+    RegCorredores clasica[n];
+    RegCorredores nonStop[k];
+
+    leerCorredores(clasica, n, "./files/clasica.bin", false);
+    leerCorredores(nonStop, k, "./files/nonStop.bin", false);
+
+    ordenarPorTiempo(clasica, n);
+    ordenarPorTiempo(nonStop, k);
+
+    int F= 1;
+    int M= 1;
+    int pos = 1;
+    const char noTermino[] = "no termino";
+    cout << "Carrera Clasica" << endl << endl;
+    cout << "Pos - Gen - Nro - Nombre y Apellido - Categoria - Grupo - Genero - Localidad - Tiempo" << endl;
+    for(int i = 0; i < n; i++){
+        if (transformar(clasica[i].llegada) == -1) {
+            for(int j = 0; j < 11; j++){
+                clasica[i].llegada[j] = noTermino[j];
+            }
+        }
+        if(clasica[i].genero == 'F'){
+            cout << pos++ << " - " << F++  << " - " << clasica[i].numero << " - " << clasica[i].nombreApellido << " - " << clasica[i].categoria << " - " << clasica[i].genero << " - " << clasica[i].localidad << " - " << clasica[i].llegada<< endl;
+        }else{
+            cout << pos++ << " - " << M++  << " - " << clasica[i].numero << " - " << clasica[i].nombreApellido << " - " << clasica[i].categoria << " - " << clasica[i].genero << " - " << clasica[i].localidad << " - " << clasica[i].llegada<< endl;
+        }
+    }
+    espacio();
+    cout << "Carrera Non Stop" << endl << endl;
+    cout << "Pos - Gen - Nro - Nombre y Apellido - Categoria - Genero - Localidad - Tiempo" << endl;
+    F = 1;
+    M = 1;
+    pos = 1;
+    for(int i = 0; i < k; i++){
+        if (!(transformar(nonStop[i].llegada) == -1)) {
+            if(nonStop[i].genero == 'F'){
+                cout << pos++ << " - " << F++  << " - " << nonStop[i].numero << " - " << nonStop[i].nombreApellido << " - " << nonStop[i].categoria << " - " << nonStop[i].genero << " - " << nonStop[i].localidad << " - " << nonStop[i].llegada<< endl;
+            }else{
+                cout << pos++ << " - " << M++  << " - " << nonStop[i].numero << " - " << nonStop[i].nombreApellido << " - " << nonStop[i].categoria << " - " << nonStop[i].genero << " - " << nonStop[i].localidad << " - " << nonStop[i].llegada<< endl;
+            }
+        }
+    }
+}
+
+void ordenarPorTiempo(RegCorredores array[], int tamaño){
+    RegCorredores aux;
+    for(int i = 0; i < tamaño - 1; i++){
+        for(int j = 0; j < tamaño - i - 1; j++){
+            if(transformar(array[j].llegada) < transformar(array[j+1].llegada)){
+                aux = array[j];
+                array[j] = array[j+1];
+                array[j+1] = aux;
+            }
+        }
+    }
+    // for(int i = 0; i < tamaño; i++){
+    //     cout << array[i].numero << " - " << array[i].nombreApellido << " - " << array[i].categoria << " - " << array[i].genero << " - " << array[i].localidad << " - " << transformar(array[i].llegada)<< endl;
+    // }
+    espacio();
+}
