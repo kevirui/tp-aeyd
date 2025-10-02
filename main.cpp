@@ -49,7 +49,7 @@ struct Reporte
 
 void espacio();
 double transformar(char tiempo[11]);
-std::string transformarHora(double tiempo);
+string transformarHora(double tiempo);
 void leerCorredores(RegCorredores array[], int tamanio, string file, bool mostrar);
 void leerCiudades(CorredoresCiudad array[], int tamanio);
 int calcularRegistrosCorredores(string archivo);
@@ -62,19 +62,17 @@ void leerPodios(string archivo);
 void reporteCiudades(CorredoresCiudad ciudades[]);
 void procesarCarrera(const char *archivo, const char *nombreCarrera, Categorias categorias[], int maxSize);
 void pausar();
+void mostrar(Reporte array[], int tamanio);
+void ordenarPorLocalidad(Reporte array[], int tamanio);
 
 int main()
 {
     int n = calcularRegistrosCorredores("./files/archivo_corredores_4Refugios.bin");
-    cout << n << endl;
     RegCorredores registro[n];
     CorredoresCiudad registro2[n];
-
-    // leerCorredores(registro, n, "./files/Archivo_corredores_4Refugios.bin", false);
-    // separarCarreras(registro, n);
-    // mostrarPorCarrera();
-
-    /* CIUDADES */
+    leerCorredores(registro, n, "./files/archivo_corredores_4Refugios.bin", false);
+    separarCarreras(registro, n);
+    mostrarPorCarrera();
     leerCiudades(registro2, n);
     reporteCiudades(registro2);
 
@@ -88,7 +86,7 @@ void espacio()
          << endl;
 }
 
-std::string transformarHora(double tiempo)
+string transformarHora(double tiempo)
 {
     float segundosEnteros = tiempo;
     int segundosInt = tiempo;
@@ -101,7 +99,7 @@ std::string transformarHora(double tiempo)
 
     float decimal = (tiempo - segundosInt) * 10;
 
-    std::string tiempoCad = "HH:MM:SS.D";
+    string tiempoCad = "HH:MM:SS.D";
 
     tiempoCad[0] = (horas / 10) + 48;
     tiempoCad[1] = (horas % 10) + 48;
@@ -165,7 +163,7 @@ int calcularRegistrosCiudades(string archivo)
     return tam / sizeof(CorredoresCiudad);
 }
 
-// RegCorredores array
+
 void leerCorredores(RegCorredores array[], int tamanio, string archivo, bool mostrar = false)
 {
     FILE *file = fopen(archivo.c_str(), "rb");
@@ -181,7 +179,6 @@ void leerCorredores(RegCorredores array[], int tamanio, string archivo, bool mos
     fclose(file);
 }
 
-// CorredoresCiudad array[]
 void leerCiudades(CorredoresCiudad array[], int tamanio)
 {
     FILE *file = fopen("./files/ciudades.bin", "rb");
@@ -194,18 +191,12 @@ void leerCiudades(CorredoresCiudad array[], int tamanio)
     size_t leidos = fread(array, sizeof(CorredoresCiudad), tamanio, file);
     fclose(file);
 
-    // Fuerza terminación en NUL por si el campo del binario no la trae
     for (size_t i = 0; i < leidos; i++)
     {
         array[i].localidad[sizeof(array[i].localidad) - 1] = '\0'; // 40-1
         array[i].ciudad[sizeof(array[i].ciudad) - 1] = '\0';       // 11-1
         array[i].nombreApellido[sizeof(array[i].nombreApellido) - 1] = '\0';
     }
-
-    // for (size_t i = 0; i < leidos; i++)
-    // {
-    //     cout << array[i].ciudad << " - " << array[i].numero << " - " << array[i].nombreApellido << endl;
-    // }
     espacio();
 }
 
@@ -232,7 +223,6 @@ void separarCarreras(RegCorredores array[], int tamanio)
 
 void mostrarPorCarrera()
 {
-    // Exportar resultados de ambas
     int n = calcularRegistrosCorredores("./files/clasica.bin");
     int k = calcularRegistrosCorredores("./files/nonStop.bin");
     Categorias categoriasCl[n] = {};
@@ -258,9 +248,6 @@ void ordenarPorTiempo(RegCorredores array[], int tamanio)
             }
         }
     }
-    // for(int i = 0; i < tamanio; i++){
-    //     cout << array[i].numero << " - " << array[i].nombreApellido << " - " << array[i].categoria << " - " << array[i].genero << " - " << array[i].localidad << " - " << transformar(array[i].llegada)<< endl;
-    // }
     espacio();
 }
 
@@ -285,14 +272,12 @@ void procesarCarrera(const char *archivo, const char *nombreCarrera, Categorias 
 
     for (int i = 0; i < n; i++)
     {
-        // --- Validar llegada ---
         if (transformar(corredores[i].llegada) == 432000)
         {
             strcpy(corredores[i].llegada, noTermino);
             llegada = false;
         }
 
-        // --- Categorías ---
         for (int j = 0; j < maxSize; j++)
         {
             if (strcmp(categorias[j].categoria, corredores[i].categoria) == 0)
@@ -327,7 +312,6 @@ void procesarCarrera(const char *archivo, const char *nombreCarrera, Categorias 
             }
         }
 
-        // --- Tiempos comparativos ---
         if (i != 0 && llegada == true)
         {
             strcpy(tiempoPr, transformarHora(transformar(corredores[i].llegada) - transformar(corredores[0].llegada)).c_str());
@@ -339,7 +323,6 @@ void procesarCarrera(const char *archivo, const char *nombreCarrera, Categorias 
             strcpy(tiempoAn, nulo);
         }
 
-        // --- Imprimir corredor ---
         if (corredores[i].genero == 'F')
         {
             cout << pos++ << " - " << F++ << " - " << cat << " - " << corredores[i].numero << " - " << corredores[i].nombreApellido << " - " << corredores[i].categoria << " - " << corredores[i].genero << " - " << corredores[i].localidad << " - " << corredores[i].llegada << " - " << tiempoPr << " - " << tiempoAn << endl;
@@ -352,12 +335,8 @@ void procesarCarrera(const char *archivo, const char *nombreCarrera, Categorias 
 
     espacio();
 
-    // Podios will be displayed later from file
-
     pausar();
 }
-
-// Creacion de archivo con los podios
 
 void exportarPodios(Categorias categoriasCl[], int n, Categorias categoriasNS[], int k)
 {
@@ -390,7 +369,7 @@ void exportarPodios(Categorias categoriasCl[], int n, Categorias categoriasNS[],
                 Categorias temp = allPodios[j];
                 allPodios[j] = allPodios[j + 1];
                 allPodios[j + 1] = temp;
-                count++; // Incrementamos count ( no estaba en ningun lado )
+                // count++; // Incrementamos count ( no estaba en ningun lado )
             }
         }
     }
@@ -434,7 +413,7 @@ void leerPodios(string archivo)
 void pausar()
 {
     string pausa;
-    cout << "Inserte una letra o numero y presione ENTER para continuar...";
+    cout << "Inserte una letra o numero y presione ENTER para continuar..." << endl;
     cin >> pausa;
 }
 
@@ -446,13 +425,11 @@ void ordenarPorLocalidad(Reporte array[], int tamanio) {
             bool vacioJ1  = (array[j+1].localidad[0] == '\0');
 
             if (!vacioJ && vacioJ1) {
-                // no hacer swap, el vacío queda al final
                 continue;
             }
 
             if ((vacioJ && !vacioJ1) || 
                 (strcmp(array[j].localidad, array[j+1].localidad) > 0)) {
-                // swap completo
                 Reporte aux = array[j];
                 array[j] = array[j+1];
                 array[j+1] = aux;
@@ -464,14 +441,13 @@ void ordenarPorLocalidad(Reporte array[], int tamanio) {
 
 void mostrar(Reporte array[], int tamanio) {
     char nulo[] = "           ";
-    int participantes =0;
+    int participantes,total =0;
     float tiempo = 0;
 
     for (int i = 0; i < tamanio; i++) {
         if(array[i].ciudad[0] == '\0'){
             break;
         }
-        // cout << strcmp(array[i].localidad, array[i-1].localidad) << endl;
         if(strcmp(array[i].localidad,array[i-1].localidad) != 0){
             cout << array[i].localidad << " - " 
              << array[i].ciudad << " - "
@@ -484,14 +460,13 @@ void mostrar(Reporte array[], int tamanio) {
              << transformarHora(array[i].totalTiempo / array[i].totalParticipantes) << endl;
         }
         participantes += array[i].totalParticipantes;
+        total += array[i].totalParticipantes;
         tiempo += array[i].totalTiempo;
         if(strcmp(array[i].localidad,array[i+1].localidad) != 0){
             cout << endl << nulo<<"Total participantes: " << participantes << " - Promedio: " << transformarHora(tiempo / participantes) << endl << endl;
             participantes = 0;
             tiempo = 0;
         }
-
-        
     }
 }
 
@@ -502,123 +477,39 @@ void reporteCiudades(CorredoresCiudad ciudades[])
     int k = calcularRegistrosCorredores("./files/archivo_corredores_4Refugios.bin");
     Reporte reporte[n] = {};
     RegCorredores corredores[k];
+    int contador = 0;
     espacio();
     leerCorredores(corredores, k, "./files/archivo_corredores_4Refugios.bin", false);
-    cout << ciudades[30].nombreApellido << endl;
-    cout << corredores[30].nombreApellido << endl;
     for (int j = 0; j < n; j++)
     {
         if (transformar(corredores[j].llegada) == 432000)
-        {
+        {   
+            //Segun el profesor, hay que excluir a los que no terminaron
+            contador ++;
             continue;
         }
         for (int i = 0; i < n; i++)
         {
-            cout << reporte[i].ciudad << " --- " << ciudades[j].ciudad << " -> ";
             if (strcmp(reporte[i].ciudad, ciudades[j].ciudad) == 0)
             {
-                cout << "iguales" << endl;
                 reporte[i].totalParticipantes++;
                 reporte[i].totalTiempo += transformar(corredores[j].llegada);
-
-                // pausar();
                 break;
             }
             else if (reporte[i].ciudad[0] == '\0')
             {
-                cout << "diferentes y vacio" << endl;
                 strcpy(reporte[i].localidad, ciudades[j].localidad);
                 strcpy(reporte[i].ciudad, ciudades[j].ciudad);
-                // cout << reporte[i].ciudad << "ah aparecido" << endl;
                 reporte[i].totalParticipantes = 1;
                 reporte[i].totalTiempo = transformar(corredores[j].llegada);
-                // pausar();
                 break;
             }
-            cout << "diferentes y ocupado" << endl;
         }
     }
 
     espacio();
-    for (int i = 0; i < n; i++)
-    {
-        if (reporte[i].ciudad[0] != '\0')
-        {
-            cout << reporte[i].localidad << " - " << reporte[i].ciudad << " - " << reporte[i].totalParticipantes << " - " << transformarHora(reporte[i].totalTiempo / reporte[i].totalParticipantes) << endl;
-        }
-        else
-        {
-            break;
-        }
-    }
     ordenarPorLocalidad(reporte, n);
     espacio();
     mostrar(reporte, n);
     espacio();
-    /* Ordenamientos */
-    // int count = 0;
-    // for (int i = 0; i < count - 1; i++)
-    // {
-    //     /* Ordenamiento por localidad */
-    //     for (int j = 0; j < count - i - 1; j++)
-    //     {
-    //         if (strcmp(reporte[j].localidad, reporte[j + 1].localidad) > 0)
-    //         {
-    //             Reporte temp = reporte[j];
-    //             reporte[j] = reporte[j + 1];
-    //             reporte[j + 1] = temp;
-    //             count++; // Incrementamos count ( no estaba en ningun lado )
-
-    //             /* Ordenamiento por ciudad */
-    //             for (int k = 0; k < count - j - 1; k++)
-    //             {
-    //                 if (strcmp(reporte[k].ciudad, reporte[k + 1].ciudad) > 0)
-    //                 {
-    //                     Reporte temp = reporte[k];
-    //                     reporte[k] = reporte[k + 1];
-    //                     reporte[k + 1] = temp;
-    //                     count++; // Incrementamos count ( no estaba en ningun lado )
-    //                 }
-    //             }
-
-    //             /*
-    //                 no pudimos probarlo -> compilaba mal
-    //             */
-    //         }
-    //     }
-    // }
 }
-
-    // for (int j = 0; j < maxSize; j++)
-    // {
-    //     if (strcmp(categorias[j].categoria, corredores[i].categoria) == 0)
-    //     {
-    //         categorias[j].ultimaPosicion++;
-    //         cat = categorias[j].ultimaPosicion;
-    //         if (cat == 1)
-    //         {
-    //             strcpy(categorias[j].corr1.nombreApellido, corredores[i].nombreApellido);
-    //             strcpy(categorias[j].corr1.llegada, corredores[i].llegada);
-    //         }
-    //         else if (cat == 2)
-    //         {
-    //             strcpy(categorias[j].corr2.nombreApellido, corredores[i].nombreApellido);
-    //             strcpy(categorias[j].corr2.llegada, corredores[i].llegada);
-    //         }
-    //         else if (cat == 3)
-    //         {
-    //             strcpy(categorias[j].corr3.nombreApellido, corredores[i].nombreApellido);
-    //             strcpy(categorias[j].corr3.llegada, corredores[i].llegada);
-    //         }
-    //         break;
-    //     }
-    //     else if (categorias[j].categoria[0] == '\0')
-    //     {
-    //         strcpy(categorias[j].carrera, nombreCarrera);
-    //         strcpy(categorias[j].categoria, corredores[i].categoria);
-    //         categorias[j].ultimaPosicion = 1;
-    //         strcpy(categorias[j].corr1.nombreApellido, corredores[i].nombreApellido);
-    //         strcpy(categorias[j].corr1.llegada, corredores[i].llegada);
-    //         break;
-    //     }
-    // }
