@@ -444,17 +444,16 @@ void reporteCiudades(CorredoresCiudad ciudades[]){
     cout << corredores[30].nombreApellido << endl;
     for (int j = 0; j < n; j++)
     {
+        if (transformar(corredores[j].llegada) == 432000)
+        {
+            continue;
+        }
         for(int i = 0; i < n; i++){
         cout << reporte[i].ciudad << " --- "<< ciudades[j].ciudad << " -> ";
         if(strcmp(reporte[i].ciudad, ciudades[j].ciudad) == 0){
             cout << "iguales" <<endl;
             reporte[i].totalParticipantes++;
-            if (transformar(corredores[j].llegada) != 432000)
-            {   
-                reporte[i].totalTiempo += transformar(corredores[j].llegada);
-            }else{
-                reporte[i].totalTiempo += 0;
-            }
+            reporte[i].totalTiempo += transformar(corredores[j].llegada);
             
 
             // pausar();
