@@ -163,7 +163,6 @@ int calcularRegistrosCiudades(string archivo)
     return tam / sizeof(CorredoresCiudad);
 }
 
-
 void leerCorredores(RegCorredores array[], int tamanio, string archivo, bool mostrar = false)
 {
     FILE *file = fopen(archivo.c_str(), "rb");
@@ -417,59 +416,71 @@ void pausar()
     cin >> pausa;
 }
 
-void ordenarPorLocalidad(Reporte array[], int tamanio) {
-    for (int i = 0; i < tamanio - 1; i++) {
-        for (int j = 0; j < tamanio - i - 1; j++) {
+void ordenarPorLocalidad(Reporte array[], int tamanio)
+{
+    for (int i = 0; i < tamanio - 1; i++)
+    {
+        for (int j = 0; j < tamanio - i - 1; j++)
+        {
 
-            bool vacioJ   = (array[j].localidad[0] == '\0');
-            bool vacioJ1  = (array[j+1].localidad[0] == '\0');
+            bool vacioJ = (array[j].localidad[0] == '\0');
+            bool vacioJ1 = (array[j + 1].localidad[0] == '\0');
 
-            if (!vacioJ && vacioJ1) {
+            if (!vacioJ && vacioJ1)
+            {
                 continue;
             }
 
-            if ((vacioJ && !vacioJ1) || 
-                (strcmp(array[j].localidad, array[j+1].localidad) > 0)) {
+            if ((vacioJ && !vacioJ1) ||
+                (strcmp(array[j].localidad, array[j + 1].localidad) > 0))
+            {
                 Reporte aux = array[j];
-                array[j] = array[j+1];
-                array[j+1] = aux;
+                array[j] = array[j + 1];
+                array[j + 1] = aux;
             }
         }
     }
 }
 
-
-void mostrar(Reporte array[], int tamanio) {
+void mostrar(Reporte array[], int tamanio)
+{
     char nulo[] = "           ";
-    int participantes,total =0;
+    int participantes, total = 0;
     float tiempo = 0;
 
-    for (int i = 0; i < tamanio; i++) {
-        if(array[i].ciudad[0] == '\0'){
+    for (int i = 0; i < tamanio; i++)
+    {
+        if (array[i].ciudad[0] == '\0')
+        {
             break;
         }
-        if(strcmp(array[i].localidad,array[i-1].localidad) != 0){
-            cout << array[i].localidad << " - " 
-             << array[i].ciudad << " - "
-             << array[i].totalParticipantes << " - "
-             << transformarHora(array[i].totalTiempo / array[i].totalParticipantes) << endl;
-        }else{
-            cout << nulo << " - " 
-             << array[i].ciudad << " - "
-             << array[i].totalParticipantes << " - "
-             << transformarHora(array[i].totalTiempo / array[i].totalParticipantes) << endl;
+        if (strcmp(array[i].localidad, array[i - 1].localidad) != 0)
+        {
+            cout << array[i].localidad << " - "
+                 << array[i].ciudad << " - "
+                 << array[i].totalParticipantes << " - "
+                 << transformarHora(array[i].totalTiempo / array[i].totalParticipantes) << endl;
+        }
+        else
+        {
+            cout << nulo << " - "
+                 << array[i].ciudad << " - "
+                 << array[i].totalParticipantes << " - "
+                 << transformarHora(array[i].totalTiempo / array[i].totalParticipantes) << endl;
         }
         participantes += array[i].totalParticipantes;
         total += array[i].totalParticipantes;
         tiempo += array[i].totalTiempo;
-        if(strcmp(array[i].localidad,array[i+1].localidad) != 0){
-            cout << endl << nulo<<"Total participantes: " << participantes << " - Promedio: " << transformarHora(tiempo / participantes) << endl << endl;
+        if (strcmp(array[i].localidad, array[i + 1].localidad) != 0)
+        {
+            cout << endl
+                 << nulo << "Total participantes: " << participantes << " - Promedio: " << transformarHora(tiempo / participantes) << endl
+                 << endl;
             participantes = 0;
             tiempo = 0;
         }
     }
 }
-
 
 void reporteCiudades(CorredoresCiudad ciudades[])
 {
@@ -483,9 +494,9 @@ void reporteCiudades(CorredoresCiudad ciudades[])
     for (int j = 0; j < n; j++)
     {
         if (transformar(corredores[j].llegada) == 432000)
-        {   
-            //Segun el profesor, hay que excluir a los que no terminaron
-            contador ++;
+        {
+            // Segun el profesor, hay que excluir a los que no terminaron
+            contador++;
             continue;
         }
         for (int i = 0; i < n; i++)
@@ -512,4 +523,5 @@ void reporteCiudades(CorredoresCiudad ciudades[])
     espacio();
     mostrar(reporte, n);
     espacio();
+    pausar();
 }
