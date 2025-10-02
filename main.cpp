@@ -441,7 +441,7 @@ void ordenarPorLocalidad(Reporte array[], int tamanio) {
 
 void mostrar(Reporte array[], int tamanio) {
     char nulo[] = "           ";
-    int participantes,total =0;
+    int participantes = 0;
     float tiempo = 0;
 
     for (int i = 0; i < tamanio; i++) {
@@ -460,7 +460,6 @@ void mostrar(Reporte array[], int tamanio) {
              << transformarHora(array[i].totalTiempo / array[i].totalParticipantes) << endl;
         }
         participantes += array[i].totalParticipantes;
-        total += array[i].totalParticipantes;
         tiempo += array[i].totalTiempo;
         if(strcmp(array[i].localidad,array[i+1].localidad) != 0){
             cout << endl << nulo<<"Total participantes: " << participantes << " - Promedio: " << transformarHora(tiempo / participantes) << endl << endl;
