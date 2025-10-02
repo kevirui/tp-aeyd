@@ -334,6 +334,40 @@ void procesarCarrera(const char *archivo, const char *nombreCarrera, Categorias 
 
 void exportarPodios(Categorias categoriasCl[], int n, Categorias categoriasNS[], int k)
 {
+    const int MAX_PODIOS = 100;
+    Categorias allPodios[MAX_PODIOS];
+    int count = 0;
+
+    for (int i = 0; i < n && count < MAX_PODIOS; i++)
+    {
+        if (strcmp(categoriasCl[i].categoria, "") != 0)
+        {
+            allPodios[count++] = categoriasCl[i];
+        }
+    }
+
+    for (int i = 0; i < k && count < MAX_PODIOS; i++)
+    {
+        if (strcmp(categoriasNS[i].categoria, "") != 0)
+        {
+            allPodios[count++] = categoriasNS[i];
+        }
+    }
+
+    // Ordenar alfabeticamento
+    for (int i = 0; i < count - 1; i++)
+    {
+        for (int j = 0; j < count - i - 1; j++)
+        {
+            if (strcmp(allPodios[j].categoria, allPodios[j + 1].categoria) > 0)
+            {
+                // Intercambio
+                Categorias temp = allPodios[j];
+                allPodios[j] = allPodios[j + 1];
+                allPodios[j + 1] = temp;
+            }
+        }
+    }
 
     FILE *podios = fopen("./files/podios.bin", "wb");
     if (!podios)
@@ -341,19 +375,9 @@ void exportarPodios(Categorias categoriasCl[], int n, Categorias categoriasNS[],
         perror("No se pudo crear podios.bin");
         return;
     }
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < count; i++)
     {
-        if (strcmp(categoriasCl[i].categoria, "") != 0)
-        {
-            fwrite(&categoriasCl[i], sizeof(Categorias), 1, podios);
-        }
-    }
-    for (int i = 0; i < k; i++)
-    {
-        if (strcmp(categoriasNS[i].categoria, "") != 0)
-        {
-            fwrite(&categoriasNS[i], sizeof(Categorias), 1, podios);
-        }
+        fwrite(&allPodios[i], sizeof(Categorias), 1, podios);
     }
     fclose(podios);
 }
@@ -369,7 +393,7 @@ void leerPodios(string archivo)
     Categorias podio;
     while (fread(&podio, sizeof(Categorias), 1, verpodios))
     {
-        cout << "Carrera: " << podio.carrera << " | Categoria: " << podio.categoria << endl;
+        cout << "Categoria: " << podio.categoria << endl;
         cout << "  1° " << podio.corr1.nombreApellido << " - " << podio.corr1.llegada << endl;
         cout << "  2° " << podio.corr2.nombreApellido << " - " << podio.corr2.llegada << endl;
         cout << "  3° " << podio.corr3.nombreApellido << " - " << podio.corr3.llegada << endl;
