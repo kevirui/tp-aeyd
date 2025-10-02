@@ -59,7 +59,7 @@ void ordenarPorTiempo(RegCorredores array[], int tamanio);
 void exportarPodios(Categorias categoriasCl[], int n, Categorias categoriasNS[], int k);
 void leerPodios(string archivo);
 void reporteCiudades(CorredoresCiudad ciudades[]);
-void procesarCarrera(const char *archivo, const char *nombreCarrera);
+void procesarCarrera(const char *archivo, const char *nombreCarrera, Categorias categorias[], int maxSize);
 void pausar();
 
 int main()
@@ -205,14 +205,13 @@ void separarCarreras(RegCorredores array[], int tamanio)
 
 void mostrarPorCarrera()
 {
-    procesarCarrera("./files/clasica.bin", "Clasica");
-    procesarCarrera("./files/nonStop.bin", "Non Stop");
-
     // Exportar resultados de ambas
     int n = calcularRegistros("./files/clasica.bin");
     int k = calcularRegistros("./files/nonStop.bin");
     Categorias categoriasCl[n] = {};
     Categorias categoriasNS[k] = {};
+    procesarCarrera("./files/clasica.bin", "Clasica", categoriasCl, n);
+    procesarCarrera("./files/nonStop.bin", "Non Stop", categoriasNS, k);
     exportarPodios(categoriasCl, n, categoriasNS, k);
     leerPodios("./files/podios.bin");
 }
@@ -238,11 +237,10 @@ void ordenarPorTiempo(RegCorredores array[], int tamanio)
     espacio();
 }
 
-void procesarCarrera(const char *archivo, const char *nombreCarrera)
+void procesarCarrera(const char *archivo, const char *nombreCarrera, Categorias categorias[], int maxSize)
 {
     int n = calcularRegistros(archivo);
     RegCorredores corredores[n];
-    Categorias categorias[n] = {};
 
     leerCorredores(corredores, n, archivo, false);
     ordenarPorTiempo(corredores, n);
@@ -268,7 +266,7 @@ void procesarCarrera(const char *archivo, const char *nombreCarrera)
         }
 
         // --- Categorías ---
-        for (int j = 0; j < n; j++)
+        for (int j = 0; j < maxSize; j++)
         {
             if (strcmp(categorias[j].categoria, corredores[i].categoria) == 0)
             {
@@ -327,18 +325,7 @@ void procesarCarrera(const char *archivo, const char *nombreCarrera)
 
     espacio();
 
-    // --- Podios ---
-    for (int i = 0; i < n; i++)
-    {
-        if (strcmp(categorias[i].categoria, "") != 0)
-        {
-            cout << categorias[i].categoria << ":" << endl;
-            cout << categorias[i].corr1.nombreApellido << " - " << categorias[i].corr1.llegada << endl;
-            cout << categorias[i].corr2.nombreApellido << " - " << categorias[i].corr2.llegada << endl;
-            cout << categorias[i].corr3.nombreApellido << " - " << categorias[i].corr3.llegada << endl;
-            espacio();
-        }
-    }
+    // Podios will be displayed later from file
 
     pausar();
 }
