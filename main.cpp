@@ -44,7 +44,7 @@ struct Reporte
     char localidad[40];
     char ciudad[11];
     int totalParticipantes;
-    int totalTiempo;
+    float totalTiempo;
 };
 
 void espacio();
@@ -65,7 +65,7 @@ void pausar();
 
 int main()
 {
-    int n = calcularRegistrosCorredores("./files/Archivo_corredores_4Refugios.bin");
+    int n = calcularRegistrosCorredores("./files/archivo_corredores_4Refugios.bin");
     cout << n << endl;
     RegCorredores registro[n];
     CorredoresCiudad registro2[n];
@@ -202,10 +202,10 @@ void leerCiudades(CorredoresCiudad array[], int tamanio)
         array[i].nombreApellido[sizeof(array[i].nombreApellido) - 1] = '\0';
     }
 
-    for (size_t i = 0; i < leidos; i++)
-    {
-        cout << array[i].ciudad << " - " << array[i].numero << " - " << array[i].nombreApellido << endl;
-    }
+    // for (size_t i = 0; i < leidos; i++)
+    // {
+    //     cout << array[i].ciudad << " - " << array[i].numero << " - " << array[i].nombreApellido << endl;
+    // }
     espacio();
 }
 
@@ -438,14 +438,72 @@ void pausar()
     cin >> pausa;
 }
 
+void ordenarPorLocalidad(Reporte array[], int tamanio) {
+    for (int i = 0; i < tamanio - 1; i++) {
+        for (int j = 0; j < tamanio - i - 1; j++) {
+
+            bool vacioJ   = (array[j].localidad[0] == '\0');
+            bool vacioJ1  = (array[j+1].localidad[0] == '\0');
+
+            if (!vacioJ && vacioJ1) {
+                // no hacer swap, el vacío queda al final
+                continue;
+            }
+
+            if ((vacioJ && !vacioJ1) || 
+                (strcmp(array[j].localidad, array[j+1].localidad) > 0)) {
+                // swap completo
+                Reporte aux = array[j];
+                array[j] = array[j+1];
+                array[j+1] = aux;
+            }
+        }
+    }
+}
+
+
+void mostrar(Reporte array[], int tamanio) {
+    char nulo[] = "           ";
+    int participantes =0;
+    float tiempo = 0;
+
+    for (int i = 0; i < tamanio; i++) {
+        if(array[i].ciudad[0] == '\0'){
+            break;
+        }
+        // cout << strcmp(array[i].localidad, array[i-1].localidad) << endl;
+        if(strcmp(array[i].localidad,array[i-1].localidad) != 0){
+            cout << array[i].localidad << " - " 
+             << array[i].ciudad << " - "
+             << array[i].totalParticipantes << " - "
+             << transformarHora(array[i].totalTiempo / array[i].totalParticipantes) << endl;
+        }else{
+            cout << nulo << " - " 
+             << array[i].ciudad << " - "
+             << array[i].totalParticipantes << " - "
+             << transformarHora(array[i].totalTiempo / array[i].totalParticipantes) << endl;
+        }
+        participantes += array[i].totalParticipantes;
+        tiempo += array[i].totalTiempo;
+        if(strcmp(array[i].localidad,array[i+1].localidad) != 0){
+            cout << endl << nulo<<"Total participantes: " << participantes << " - Promedio: " << transformarHora(tiempo / participantes) << endl << endl;
+            participantes = 0;
+            tiempo = 0;
+        }
+
+        
+    }
+}
+
+
 void reporteCiudades(CorredoresCiudad ciudades[])
 {
     int n = calcularRegistrosCiudades("./files/ciudades.bin");
-    int k = calcularRegistrosCorredores("./files/Archivo_corredores_4Refugios.bin");
+    int k = calcularRegistrosCorredores("./files/archivo_corredores_4Refugios.bin");
     Reporte reporte[n] = {};
     RegCorredores corredores[k];
     espacio();
-    leerCorredores(corredores, k, "./files/Archivo_corredores_4Refugios.bin", false);
+    leerCorredores(corredores, k, "./files/archivo_corredores_4Refugios.bin", false);
     cout << ciudades[30].nombreApellido << endl;
     cout << corredores[30].nombreApellido << endl;
     for (int j = 0; j < n; j++)
@@ -493,39 +551,43 @@ void reporteCiudades(CorredoresCiudad ciudades[])
             break;
         }
     }
-
+    ordenarPorLocalidad(reporte, n);
+    espacio();
+    mostrar(reporte, n);
+    espacio();
     /* Ordenamientos */
-    int count = 0;
-    for (int i = 0; i < count - 1; i++)
-    {
-        /* Ordenamiento por localidad */
-        for (int j = 0; j < count - i - 1; j++)
-        {
-            if (strcmp(reporte[j].localidad, reporte[j + 1].localidad) > 0)
-            {
-                Reporte temp = reporte[j];
-                reporte[j] = reporte[j + 1];
-                reporte[j + 1] = temp;
-                count++; // Incrementamos count ( no estaba en ningun lado )
+    // int count = 0;
+    // for (int i = 0; i < count - 1; i++)
+    // {
+    //     /* Ordenamiento por localidad */
+    //     for (int j = 0; j < count - i - 1; j++)
+    //     {
+    //         if (strcmp(reporte[j].localidad, reporte[j + 1].localidad) > 0)
+    //         {
+    //             Reporte temp = reporte[j];
+    //             reporte[j] = reporte[j + 1];
+    //             reporte[j + 1] = temp;
+    //             count++; // Incrementamos count ( no estaba en ningun lado )
 
-                /* Ordenamiento por ciudad */
-                for (int k = 0; k < count - j - 1; k++)
-                {
-                    if (strcmp(reporte[k].ciudad, reporte[k + 1].ciudad) > 0)
-                    {
-                        Reporte temp = reporte[k];
-                        reporte[k] = reporte[k + 1];
-                        reporte[k + 1] = temp;
-                        count++; // Incrementamos count ( no estaba en ningun lado )
-                    }
-                }
+    //             /* Ordenamiento por ciudad */
+    //             for (int k = 0; k < count - j - 1; k++)
+    //             {
+    //                 if (strcmp(reporte[k].ciudad, reporte[k + 1].ciudad) > 0)
+    //                 {
+    //                     Reporte temp = reporte[k];
+    //                     reporte[k] = reporte[k + 1];
+    //                     reporte[k + 1] = temp;
+    //                     count++; // Incrementamos count ( no estaba en ningun lado )
+    //                 }
+    //             }
 
-                /*
-                    no pudimos probarlo -> compilaba mal
-                */
-            }
-        }
-    }
+    //             /*
+    //                 no pudimos probarlo -> compilaba mal
+    //             */
+    //         }
+    //     }
+    // }
+}
 
     // for (int j = 0; j < maxSize; j++)
     // {
