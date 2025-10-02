@@ -185,24 +185,29 @@ void leerCorredores(RegCorredores array[], int tamanio, string archivo, bool mos
 void leerCiudades(CorredoresCiudad array[], int tamanio)
 {
     FILE *file = fopen("./files/ciudades.bin", "rb");
-    if (!file) { perror("Error al abrir"); return; }
+    if (!file)
+    {
+        perror("Error al abrir");
+        return;
+    }
 
     size_t leidos = fread(array, sizeof(CorredoresCiudad), tamanio, file);
     fclose(file);
 
     // Fuerza terminación en NUL por si el campo del binario no la trae
-    for (size_t i = 0; i < leidos; i++) {
-        array[i].localidad[sizeof(array[i].localidad)-1] = '\0'; // 40-1
-        array[i].ciudad[sizeof(array[i].ciudad)-1]       = '\0'; // 11-1
-        array[i].nombreApellido[sizeof(array[i].nombreApellido)-1] = '\0';
+    for (size_t i = 0; i < leidos; i++)
+    {
+        array[i].localidad[sizeof(array[i].localidad) - 1] = '\0'; // 40-1
+        array[i].ciudad[sizeof(array[i].ciudad) - 1] = '\0';       // 11-1
+        array[i].nombreApellido[sizeof(array[i].nombreApellido) - 1] = '\0';
     }
 
-    for (size_t i = 0; i < leidos; i++) {
-        cout << array[i].ciudad << " - " << array[i].numero << " - " << array[i].nombreApellido<< endl;
+    for (size_t i = 0; i < leidos; i++)
+    {
+        cout << array[i].ciudad << " - " << array[i].numero << " - " << array[i].nombreApellido << endl;
     }
     espacio();
 }
-
 
 void separarCarreras(RegCorredores array[], int tamanio)
 {
@@ -376,7 +381,6 @@ void exportarPodios(Categorias categoriasCl[], int n, Categorias categoriasNS[],
         }
     }
 
- 
     for (int i = 0; i < count - 1; i++)
     {
         for (int j = 0; j < count - i - 1; j++)
@@ -386,6 +390,7 @@ void exportarPodios(Categorias categoriasCl[], int n, Categorias categoriasNS[],
                 Categorias temp = allPodios[j];
                 allPodios[j] = allPodios[j + 1];
                 allPodios[j + 1] = temp;
+                count++; // Incrementamos count ( no estaba en ningun lado )
             }
         }
     }
@@ -433,7 +438,8 @@ void pausar()
     cin >> pausa;
 }
 
-void reporteCiudades(CorredoresCiudad ciudades[]){
+void reporteCiudades(CorredoresCiudad ciudades[])
+{
     int n = calcularRegistrosCiudades("./files/ciudades.bin");
     int k = calcularRegistrosCorredores("./files/Archivo_corredores_4Refugios.bin");
     Reporte reporte[n] = {};
@@ -448,74 +454,109 @@ void reporteCiudades(CorredoresCiudad ciudades[]){
         {
             continue;
         }
-        for(int i = 0; i < n; i++){
-        cout << reporte[i].ciudad << " --- "<< ciudades[j].ciudad << " -> ";
-        if(strcmp(reporte[i].ciudad, ciudades[j].ciudad) == 0){
-            cout << "iguales" <<endl;
-            reporte[i].totalParticipantes++;
-            reporte[i].totalTiempo += transformar(corredores[j].llegada);
-            
+        for (int i = 0; i < n; i++)
+        {
+            cout << reporte[i].ciudad << " --- " << ciudades[j].ciudad << " -> ";
+            if (strcmp(reporte[i].ciudad, ciudades[j].ciudad) == 0)
+            {
+                cout << "iguales" << endl;
+                reporte[i].totalParticipantes++;
+                reporte[i].totalTiempo += transformar(corredores[j].llegada);
 
-            // pausar();
-            break;
-        }else if(reporte[i].ciudad[0] == '\0'){
-            cout << "diferentes y vacio" <<endl;
-            strcpy(reporte[i].localidad,ciudades[j].localidad);
-            strcpy(reporte[i].ciudad, ciudades[j].ciudad);
-            // cout << reporte[i].ciudad << "ah aparecido" << endl;
-            reporte[i].totalParticipantes = 1;
-            reporte[i].totalTiempo = transformar(corredores[j].llegada);
-            // pausar();
-            break;
+                // pausar();
+                break;
+            }
+            else if (reporte[i].ciudad[0] == '\0')
+            {
+                cout << "diferentes y vacio" << endl;
+                strcpy(reporte[i].localidad, ciudades[j].localidad);
+                strcpy(reporte[i].ciudad, ciudades[j].ciudad);
+                // cout << reporte[i].ciudad << "ah aparecido" << endl;
+                reporte[i].totalParticipantes = 1;
+                reporte[i].totalTiempo = transformar(corredores[j].llegada);
+                // pausar();
+                break;
+            }
+            cout << "diferentes y ocupado" << endl;
         }
-        cout << "diferentes y ocupado"<< endl;
-    }
     }
 
     espacio();
     for (int i = 0; i < n; i++)
     {
-        if(reporte[i].ciudad[0] != '\0'){
-            cout << reporte[i].localidad << " - " << reporte[i].ciudad << " - " << reporte[i].totalParticipantes << " - " << transformarHora(reporte[i].totalTiempo/reporte[i].totalParticipantes) << endl; 
-        }else{
+        if (reporte[i].ciudad[0] != '\0')
+        {
+            cout << reporte[i].localidad << " - " << reporte[i].ciudad << " - " << reporte[i].totalParticipantes << " - " << transformarHora(reporte[i].totalTiempo / reporte[i].totalParticipantes) << endl;
+        }
+        else
+        {
             break;
         }
     }
 
+    /* Ordenamientos */
+    int count = 0;
+    for (int i = 0; i < count - 1; i++)
+    {
+        /* Ordenamiento por localidad */
+        for (int j = 0; j < count - i - 1; j++)
+        {
+            if (strcmp(reporte[j].localidad, reporte[j + 1].localidad) > 0)
+            {
+                Reporte temp = reporte[j];
+                reporte[j] = reporte[j + 1];
+                reporte[j + 1] = temp;
+                count++; // Incrementamos count ( no estaba en ningun lado )
 
-}
+                /* Ordenamiento por ciudad */
+                for (int k = 0; k < count - j - 1; k++)
+                {
+                    if (strcmp(reporte[k].ciudad, reporte[k + 1].ciudad) > 0)
+                    {
+                        Reporte temp = reporte[k];
+                        reporte[k] = reporte[k + 1];
+                        reporte[k + 1] = temp;
+                        count++; // Incrementamos count ( no estaba en ningun lado )
+                    }
+                }
 
+                /*
+                    no pudimos probarlo -> compilaba mal
+                */
+            }
+        }
+    }
 
-        // for (int j = 0; j < maxSize; j++)
-        // {
-        //     if (strcmp(categorias[j].categoria, corredores[i].categoria) == 0)
-        //     {
-        //         categorias[j].ultimaPosicion++;
-        //         cat = categorias[j].ultimaPosicion;
-        //         if (cat == 1)
-        //         {
-        //             strcpy(categorias[j].corr1.nombreApellido, corredores[i].nombreApellido);
-        //             strcpy(categorias[j].corr1.llegada, corredores[i].llegada);
-        //         }
-        //         else if (cat == 2)
-        //         {
-        //             strcpy(categorias[j].corr2.nombreApellido, corredores[i].nombreApellido);
-        //             strcpy(categorias[j].corr2.llegada, corredores[i].llegada);
-        //         }
-        //         else if (cat == 3)
-        //         {
-        //             strcpy(categorias[j].corr3.nombreApellido, corredores[i].nombreApellido);
-        //             strcpy(categorias[j].corr3.llegada, corredores[i].llegada);
-        //         }
-        //         break;
-        //     }
-        //     else if (categorias[j].categoria[0] == '\0')
-        //     {
-        //         strcpy(categorias[j].carrera, nombreCarrera);
-        //         strcpy(categorias[j].categoria, corredores[i].categoria);
-        //         categorias[j].ultimaPosicion = 1;
-        //         strcpy(categorias[j].corr1.nombreApellido, corredores[i].nombreApellido);
-        //         strcpy(categorias[j].corr1.llegada, corredores[i].llegada);
-        //         break;
-        //     }
-        // }
+    // for (int j = 0; j < maxSize; j++)
+    // {
+    //     if (strcmp(categorias[j].categoria, corredores[i].categoria) == 0)
+    //     {
+    //         categorias[j].ultimaPosicion++;
+    //         cat = categorias[j].ultimaPosicion;
+    //         if (cat == 1)
+    //         {
+    //             strcpy(categorias[j].corr1.nombreApellido, corredores[i].nombreApellido);
+    //             strcpy(categorias[j].corr1.llegada, corredores[i].llegada);
+    //         }
+    //         else if (cat == 2)
+    //         {
+    //             strcpy(categorias[j].corr2.nombreApellido, corredores[i].nombreApellido);
+    //             strcpy(categorias[j].corr2.llegada, corredores[i].llegada);
+    //         }
+    //         else if (cat == 3)
+    //         {
+    //             strcpy(categorias[j].corr3.nombreApellido, corredores[i].nombreApellido);
+    //             strcpy(categorias[j].corr3.llegada, corredores[i].llegada);
+    //         }
+    //         break;
+    //     }
+    //     else if (categorias[j].categoria[0] == '\0')
+    //     {
+    //         strcpy(categorias[j].carrera, nombreCarrera);
+    //         strcpy(categorias[j].categoria, corredores[i].categoria);
+    //         categorias[j].ultimaPosicion = 1;
+    //         strcpy(categorias[j].corr1.nombreApellido, corredores[i].nombreApellido);
+    //         strcpy(categorias[j].corr1.llegada, corredores[i].llegada);
+    //         break;
+    //     }
+    // }
