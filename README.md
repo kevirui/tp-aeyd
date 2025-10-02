@@ -25,7 +25,7 @@ carreras “4 Refugios Clásica” y “4 Refugios NonStop” (máx. 1000 corred
 
 En terminal:
 
-> g++ main.cpp funciones.cpp -o programa
+> g++ main.cpp -o programa
 
 
 Y luego ejecutás:

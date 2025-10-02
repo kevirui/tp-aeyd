@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <cstring>
 #include <string>
+#include <iomanip>
 
 using namespace std;
 
@@ -267,8 +268,22 @@ void procesarCarrera(const char *archivo, const char *nombreCarrera, Categorias 
 
     cout << "Carrera " << nombreCarrera << endl
          << endl;
-    cout << "Pos - Gen - Cat - Nro - Nombre y Apellido - Categoria - Genero - Localidad - Tiempo - TiempoComPri - TiempoComAnt" << endl;
 
+    // Encabezados
+    cout << left
+         << setw(6) << "Pos.G."
+         << setw(6) << "\tPos.Gen."
+         << setw(6) << " Pos.Cat."
+         << setw(8) << " Numero"
+         << setw(25) << "\tNombre y Apellido"
+         << setw(35) << "\tCategoria"
+         << setw(8) << "      " << "\tGenero"
+         << setw(15) << "     " << "\tLocalidad"
+         << setw(12) << "\tTotal"
+         << setw(14) << "\tDif.Primero"
+         << setw(14) << "\tDif.Anterior"
+         << "\n";
+    cout << "=============================================================================================================================================================================================================" << endl;
     for (int i = 0; i < n; i++)
     {
         if (transformar(corredores[i].llegada) == 432000)
@@ -324,11 +339,11 @@ void procesarCarrera(const char *archivo, const char *nombreCarrera, Categorias 
 
         if (corredores[i].genero == 'F')
         {
-            cout << pos++ << " - " << F++ << " - " << cat << " - " << corredores[i].numero << " - " << corredores[i].nombreApellido << " - " << corredores[i].categoria << " - " << corredores[i].genero << " - " << corredores[i].localidad << " - " << corredores[i].llegada << " - " << tiempoPr << " - " << tiempoAn << endl;
+            cout << left << "    " << pos++ << "\t  " << F++ << "\t  " << cat << "\t  " << corredores[i].numero << "\t  " << setw(27) << corredores[i].nombreApellido << "\t  " << setw(35) << corredores[i].categoria << "    " << "\t  " << setw(8) << corredores[i].genero << "\t  " << setw(15) << corredores[i].localidad << "\t  " << corredores[i].llegada << "\t  " << tiempoPr << "\t  " << tiempoAn << endl;
         }
         else
         {
-            cout << pos++ << " - " << M++ << " - " << cat << " - " << corredores[i].numero << " - " << corredores[i].nombreApellido << " - " << corredores[i].categoria << " - " << corredores[i].genero << " - " << corredores[i].localidad << " - " << corredores[i].llegada << " - " << tiempoPr << " - " << tiempoAn << endl;
+            cout << left << "    " << pos++ << "\t  " << M++ << "\t  " << cat << "\t  " << corredores[i].numero << "\t  " << setw(27) << corredores[i].nombreApellido << "\t  " << corredores[i].categoria << "\t  " << setw(8) << corredores[i].genero << "\t  " << setw(15) << corredores[i].localidad << "\t  " << corredores[i].llegada << "\t  " << tiempoPr << "\t  " << tiempoAn << endl;
         }
     }
 
@@ -445,8 +460,18 @@ void ordenarPorLocalidad(Reporte array[], int tamanio)
 void mostrar(Reporte array[], int tamanio)
 {
     char nulo[] = "           ";
-    int participantes, total = 0;
+    int participantes = 0;
     float tiempo = 0;
+
+    // Encabezados
+    cout << left
+         << setw(10) << "Localidad"
+         << setw(10) << "\tCiudad"
+         << setw(15) << "Cantidad de corredores\t"
+         << setw(10) << "Tiempo promedio"
+         << "\n";
+
+    cout << "===============================================================\n";
 
     for (int i = 0; i < tamanio; i++)
     {
@@ -454,28 +479,28 @@ void mostrar(Reporte array[], int tamanio)
         {
             break;
         }
+
         if (strcmp(array[i].localidad, array[i - 1].localidad) != 0)
         {
-            cout << array[i].localidad << " - "
-                 << array[i].ciudad << " - "
-                 << array[i].totalParticipantes << " - "
-                 << transformarHora(array[i].totalTiempo / array[i].totalParticipantes) << endl;
+            cout << left << setw(10) << array[i].localidad << "\t" << setw(10)
+                 << array[i].ciudad << "\t" << setw(15)
+                 << array[i].totalParticipantes << setw(10)
+                 << transformarHora(array[i].totalTiempo / array[i].totalParticipantes) << "\t" << endl;
         }
         else
         {
-            cout << nulo << " - "
-                 << array[i].ciudad << " - "
-                 << array[i].totalParticipantes << " - "
-                 << transformarHora(array[i].totalTiempo / array[i].totalParticipantes) << endl;
+            cout << left << setw(10) << "\t" << "    "
+                 << array[i].ciudad << "\t" << setw(15)
+                 << array[i].totalParticipantes << setw(10) << setw(10) << transformarHora(array[i].totalTiempo / array[i].totalParticipantes) << "\t" << endl;
         }
         participantes += array[i].totalParticipantes;
-        total += array[i].totalParticipantes;
         tiempo += array[i].totalTiempo;
         if (strcmp(array[i].localidad, array[i + 1].localidad) != 0)
         {
             cout << endl
-                 << nulo << "Total participantes: " << participantes << " - Promedio: " << transformarHora(tiempo / participantes) << endl
+                 << nulo << "| Total: " << participantes << " - Promedio: " << transformarHora(tiempo / participantes) << " | " << endl
                  << endl;
+            cout << "==============================================================" << endl;
             participantes = 0;
             tiempo = 0;
         }
